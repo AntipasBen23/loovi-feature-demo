@@ -42,28 +42,34 @@ export default function Page() {
       : null
 
   return (
-    <main className="min-h-screen bg-[#f8fafc] flex flex-col items-center px-6 py-12">
-      <div className="w-full max-w-5xl space-y-10">
-        {/* Title */}
-        <div className="space-y-3">
-          <h1 className="text-3xl font-semibold text-gray-900">
-            Health Trajectory Preview
+    <main className="min-h-screen flex flex-col items-center px-6 py-16">
+      <div className="w-full max-w-5xl space-y-12">
+        {/* Header Block */}
+        <div className="space-y-4">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
+            Trajectory Preview
           </h1>
-          <p className="text-gray-500 max-w-xl">
-            Projection based on recent biomarker trend.
-            Scenario adjustments simulate behavior shifts.
+
+          <p className="text-[15px] text-[var(--muted)] max-w-xl leading-relaxed">
+            Forward projection derived from recent longitudinal
+            biomarker slope. Scenario toggles simulate behavioral
+            adjustments over time.
           </p>
         </div>
 
         {/* Controls */}
-        <div className="flex flex-col md:flex-row gap-6 md:items-center justify-between">
-          <div className="flex gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-[var(--muted)] mb-2">
+              Biomarker
+            </label>
+
             <select
               value={biomarker}
               onChange={(e) =>
                 setBiomarker(e.target.value as BiomarkerType)
               }
-              className="px-4 py-2 rounded-xl border border-gray-200 bg-white"
+              className="px-4 py-2 rounded-xl border border-[var(--border)] bg-white text-sm"
             >
               <option value="cholesterol">
                 Cholesterol (mg/dL)
@@ -74,60 +80,67 @@ export default function Page() {
             </select>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {scenarios.map((s) => (
-              <button
-                key={s.type}
-                onClick={() =>
-                  setScenario(s.type as ScenarioType)
-                }
-                className={`px-4 py-2 rounded-full text-sm border transition ${
-                  scenario === s.type
-                    ? "bg-teal-600 text-white border-teal-600"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-[var(--muted)] mb-2">
+              Scenario
+            </label>
+
+            <div className="flex flex-wrap gap-2">
+              {scenarios.map((s) => (
+                <button
+                  key={s.type}
+                  onClick={() =>
+                    setScenario(s.type as ScenarioType)
+                  }
+                  className={`px-4 py-2 rounded-full text-sm border transition ${
+                    scenario === s.type
+                      ? "bg-[var(--accent)] text-white border-[var(--accent)]"
+                      : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-gray-300"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Chart */}
         {loading ? (
-          <div className="h-[420px] flex items-center justify-center text-gray-400">
-            Loading biomarker data...
+          <div className="h-[420px] flex items-center justify-center text-[var(--muted)]">
+            Loading longitudinal data…
           </div>
         ) : (
-          <TrajectoryChart data={projectedData} />
+          <TrajectoryChart data={projectedData} color="var(--accent)" />
         )}
 
         {/* Insight Panel */}
         {!loading && delta && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-            <h2 className="text-lg font-medium text-gray-900 mb-2">
-              Trajectory Insight
+          <div className="bg-[var(--card)] rounded-2xl shadow-sm p-8 border border-[var(--border)] space-y-4">
+            <h2 className="text-lg font-medium">
+              Projection Summary
             </h2>
 
-            <p className="text-gray-600">
-              Over the next 12 months, this biomarker is
+            <p className="text-[15px] text-[var(--muted)] leading-relaxed">
+              Based on the current trajectory, this biomarker is
               projected to{" "}
               <span
                 className={`font-semibold ${
                   Number(delta) > 0
-                    ? "text-red-500"
-                    : "text-teal-600"
+                    ? "text-[var(--danger)]"
+                    : "text-[var(--accent)]"
                 }`}
               >
                 {Number(delta) > 0 ? "increase" : "decrease"}{" "}
-                by {Math.abs(Number(delta))}.
-              </span>
+                by {Math.abs(Number(delta))}
+              </span>{" "}
+              over the next 12 months.
             </p>
 
-            <p className="text-gray-400 text-sm mt-3">
-              Projection derived from recent slope.
-              For clinical use, longitudinal data depth and
-              contextual variables should be considered.
+            <p className="text-xs text-gray-400">
+              Projection is trend-derived and intended for
+              exploratory use. Clinical interpretation should
+              consider longitudinal depth and contextual inputs.
             </p>
           </div>
         )}
